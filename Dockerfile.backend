@@ -1,0 +1,42 @@
+# Build this Dockerfile from the monorepo root:
+# docker build -t backend -f Dockerfile.backend .
+
+FROM node:20-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+RUN apk add --no-cache libc6-compat caddy
+
+FROM base AS builder
+WORKDIR /app
+RUN npm install -g --force pnpm@9.0.0 turbo
+COPY . .
+RUN turbo prune product-service auth-service order-service payment-service email-service --docker
+
+FROM base AS installer
+WORKDIR /app
+
+# First install dependencies
+COPY --from=builder /app/out/json/ .
+RUN pnpm install --frozen-lockfile
+
+# Copy source code and database schemas
+COPY --from=builder /app/out/full/ .
+
+# Run all build steps (like generating Prisma clients, compiling payment-service, etc.)
+RUN npx turbo run build
+
+FROM base AS runner
+WORKDIR /app
+
+# Install pm2 globally
+RUN npm install -g pm2
+
+# Copy installer output
+COPY --from=installer /app .
+COPY ecosystem.config.cjs .
+COPY Caddyfile .
+
+EXPOSE 8080
+
+CMD ["pm2-runtime", "ecosystem.config.cjs"]
