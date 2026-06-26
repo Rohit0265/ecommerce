@@ -1,0 +1,21 @@
+{
+    "name": "@repo/types",
+    "version": "0.0.1",
+    "main": "src/index.ts",
+    "type": "module",
+    "dependencies": {
+        "@repo/product-db": "workspace:*",
+        "@repo/order-db": "workspace:*",
+        "zod": "^4.0.14"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "workspace:*",
+        "@types/node": "^25.0.10"
+    },
+    "exports": {
+        ".": {
+            "import": "./src/index.ts",
+            "types": "./src/index.ts"
+        }
+    }
+}
