@@ -1,4 +1,4 @@
-k# Build this Dockerfile from the monorepo root:
+# Build this Dockerfile from the monorepo root:
 # docker build -t payment-service -f apps/payment-service/Dockerfile .
 
 FROM node:20-alpine AS base
