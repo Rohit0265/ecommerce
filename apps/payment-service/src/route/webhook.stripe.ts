@@ -41,6 +41,7 @@ webhookRoute.post("/stripe", async (c) => {
       console.log("WEBHOOK RECIEVED",session);
       producer.send("payment.successful", {
         value: {
+          stripeSessionId: session.id,
           userId: session.client_reference_id,
           email: session.customer_details?.email,
           amount: session.amount_total,

@@ -29,8 +29,8 @@ const fetchOrders = async (): Promise<OrderType[]> => {
     return [];
   }
 
-  const data: OrdersResponse = await res.json();
-  return data.orders || [];
+  const data: any = await res.json();
+  return Array.isArray(data) ? data : data.orders || [];
 };
 
 const OrdersPage = async () => {

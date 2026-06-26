@@ -8,6 +8,7 @@ const OrderSchema = new Schema({
     email:{type :String , required:true},
     amount:{type :String , required:true},
     status:{type :String , required:true ,enum:OrderStatus},
+    stripeSessionId:{type :String},
     products:{type :[
         {
             name:{type:String , required:true},

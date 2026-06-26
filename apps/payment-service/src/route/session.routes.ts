@@ -5,6 +5,7 @@ import { CartItemsType } from "@repo/types";
 import { getStripeProductPrice } from "../utils/stripeProducts";
 import { Session } from "inspector/promises";
 import stripe from "../utils/stripe";
+import { producer } from "../utils/kafka";
 
 const sessionRoutes =new Hono();
 
@@ -56,7 +57,25 @@ sessionRoutes.get("/:session_id",async (c)=>{
   const {session_id}= c.req.param();
   const session = await stripe.checkout.sessions.retrieve(session_id as string,{
     expand:["line_items"],
-  })
+  });
+
+  if (session.status === "complete" && session.payment_status === "paid") {
+    const lineItems = session.line_items || await stripe.checkout.sessions.listLineItems(session.id);
+    await producer.send("payment.successful", {
+      value: {
+        stripeSessionId: session.id,
+        userId: session.client_reference_id,
+        email: session.customer_details?.email,
+        amount: session.amount_total,
+        status: "success",
+        products: lineItems.data.map((item) => ({
+          name: item.description,
+          quantity: item.quantity,
+          price: item.price?.unit_amount,
+        })),
+      },
+    });
+  }
 
   console.log(session);
   return c.json(session);
