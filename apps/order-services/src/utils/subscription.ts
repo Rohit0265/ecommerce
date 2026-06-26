@@ -19,7 +19,7 @@ export const runKafkaSubscriptions = async () => {
 
   consumer.subscribe([
     {
-      topicName: "product.successful",
+      topicName: "payment.successful",
       topicHandler: async (message) => {
         console.log("Received message: payment.successful", message);
 

@@ -14,6 +14,7 @@ if(!auth?.userId){
         message:"You are not logged in.",
     })
 }
+c.set("userId", auth.userId);
 await next();
 })
 
@@ -29,6 +30,7 @@ if(!auth?.userId){
         message:"You are not logged in.",
     })
 }
+c.set("userId", auth.userId);
 
   const claims = auth.sessionClaims as CustomJwtSessionClaims
 

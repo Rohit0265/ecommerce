@@ -15,6 +15,7 @@ export const shoulbeUser =async (request:FastifyRequest,reply:FastifyReply)=>{
     if (!userId) {
     return reply.code(401).send({ success: false, message: "Not authenticated" });
   }
+  request.userId = userId;
 
 }
 
@@ -31,5 +32,6 @@ export const shoulbeAdmin =async (request:FastifyRequest,reply:FastifyReply)=>{
   if(claims?.metadata?.role !== "admin"){
     return reply.status(403).send({ success: false, message: "Unauthorized" });
   }
+  request.userId = auth.userId;
 
 } 
