@@ -34,7 +34,10 @@ const start = async () => {
             await sendMail({
               email,
               subject: "Order has been created",
-              text: `Hello! Your order: Amount: ${amount/100}, Status: ${status}`,
+              text: `Hello! Your order has been Placed.
+              Order Summary:
+             unt: ${amount/100}, Status: ${status}
+              Thank you for shopping with us! `,
             });
             console.log(`Email successfully sent to ${email}!`);
           } else {
