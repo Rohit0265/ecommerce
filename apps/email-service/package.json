@@ -14,7 +14,8 @@
     "dependencies": {
         "@repo/kafka": "workspace:*",
         "@repo/types": "workspace:*",
-        "nodemailer": "^7.0.6"
+        "nodemailer": "^7.0.6",
+        "tsx": "^4.20.5"
     },
     "devDependencies": {
         "@repo/typescript-config": "workspace:*",
