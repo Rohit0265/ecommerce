@@ -1,4 +1,8 @@
 # Caddyfile
+{
+    admin off
+}
+
 :{$PORT} {
     # Order Service (stripping the /orders prefix)
     route /orders/* {
