@@ -1,7 +1,7 @@
 import { Request,Response } from "express"
 import {Prisma,prisma} from "@repo/product-db"
 import { producer } from "../utils/kafka";
-import { getStripeProductType } from "@repo/types";
+import { StripeProductType } from "@repo/types";
 
 
 
@@ -25,7 +25,7 @@ export const createProduct = async (req:Request, res:Response)=>{
 
     const product = await prisma.product.create({data});
 
-    const stripeProducts:getStripeProductType = {
+    const stripeProducts:StripeProductType = {
         id:product.id.toString(),
         name:product.name,
         price:product.price
@@ -90,16 +90,23 @@ export const getProducts = async (req:Request, res:Response)=>{
         }
     })();
 
+    const where: Prisma.ProductWhereInput = {};
+
+    if (category && category !== "all") {
+        where.category = {
+            slug: category as string,
+        };
+    }
+
+    if (search) {
+        where.name = {
+            contains: search as string,
+            mode: "insensitive"
+        };
+    }
+
     const products = await prisma.product.findMany({
-        where:{
-            category:{
-                slug:category as string,
-            },
-            name:{
-                contains:search as string,
-                mode:"insensitive"
-            }
-        },
+        where,
         orderBy,
         take:limit ? Number(limit):undefined,
     });
