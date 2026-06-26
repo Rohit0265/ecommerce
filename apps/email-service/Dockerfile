@@ -24,6 +24,9 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY --from=builder /app/out/full/ .
 
+# Build upstream dependencies and the service
+RUN npx turbo run build --filter=email-service
+
 FROM base AS runner
 WORKDIR /app
 

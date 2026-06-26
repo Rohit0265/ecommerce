@@ -24,8 +24,8 @@ RUN pnpm install --frozen-lockfile
 # Copy source code
 COPY --from=builder /app/out/full/ .
 
-# Build payment-service using tsc
-RUN pnpm --filter=payment-service run build
+# Build upstream dependencies and the service
+RUN npx turbo run build --filter=payment-service
 
 FROM base AS runner
 WORKDIR /app

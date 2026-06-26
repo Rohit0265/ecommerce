@@ -24,8 +24,8 @@ RUN pnpm install --frozen-lockfile
 # Copy source code and database models
 COPY --from=builder /app/out/full/ .
 
-# Generate the Prisma Client for the database package
-RUN pnpm --filter=@repo/product-db run db:generate
+# Build upstream dependencies and the service
+RUN npx turbo run build --filter=product-service
 
 FROM base AS runner
 WORKDIR /app
