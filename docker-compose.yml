@@ -1,0 +1,146 @@
+version: "3.8"
+
+services:
+  # Single-node Kafka Broker using KRaft mode for optimal resource consumption
+  kafka:
+    image: apache/kafka:4.1.1
+    container_name: kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://:9092,CONTROLLER://:9093,EXTERNAL://:19092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    ports:
+      - "19092:19092"
+    networks:
+      - ecom-network
+
+  # Auth Microservice (Express + Clerk)
+  auth-service:
+    build:
+      context: .
+      dockerfile: ./apps/auth-service/Dockerfile
+    container_name: auth-service
+    ports:
+      - "8003:8003"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+    env_file:
+      - ./apps/auth-service/.env
+    depends_on:
+      - kafka
+    networks:
+      - ecom-network
+
+  # Product Microservice (Express + Prisma + Postgres)
+  product-service:
+    build:
+      context: .
+      dockerfile: ./apps/product-service/Dockerfile
+    container_name: product-service
+    ports:
+      - "8000:8000"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+    env_file:
+      - ./apps/product-service/.env
+    depends_on:
+      - kafka
+    networks:
+      - ecom-network
+
+  # Order Microservice (Fastify + Mongoose + Mongo)
+  order-services:
+    build:
+      context: .
+      dockerfile: ./apps/order-services/Dockerfile
+    container_name: order-services
+    ports:
+      - "8001:8001"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+    env_file:
+      - ./apps/order-services/.env
+    depends_on:
+      - kafka
+    networks:
+      - ecom-network
+
+  # Payment Microservice (Hono + Stripe)
+  payment-service:
+    build:
+      context: .
+      dockerfile: ./apps/payment-service/Dockerfile
+    container_name: payment-service
+    ports:
+      - "8002:8002"
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+    env_file:
+      - ./apps/payment-service/.env
+    depends_on:
+      - kafka
+    networks:
+      - ecom-network
+
+  # Email Microservice (Kafka Consumer + Nodemailer)
+  email-service:
+    build:
+      context: .
+      dockerfile: ./apps/email-service/Dockerfile
+    container_name: email-service
+    environment:
+      - KAFKA_BROKERS=kafka:9092
+    env_file:
+      - ./apps/email-service/.env
+    depends_on:
+      - kafka
+    networks:
+      - ecom-network
+
+  # Next.js Storefront App
+  client:
+    build:
+      context: .
+      dockerfile: ./apps/client/Dockerfile
+      args:
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_YXB0LXRldHJhLTIxLmNsZXJrLmFjY291bnRzLmRldiQ}
+        - NEXT_PUBLIC_PRODUCT_URL=${NEXT_PUBLIC_PRODUCT_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_ORDER_URL=${NEXT_PUBLIC_ORDER_URL:-http://localhost:8001}
+        - NEXT_PUBLIC_PAYMENT_URL=${NEXT_PUBLIC_PAYMENT_URL:-http://localhost:8002}
+    container_name: client-app
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./apps/client/.env
+    networks:
+      - ecom-network
+
+  # Next.js Admin Dashboard App
+  admin:
+    build:
+      context: .
+      dockerfile: ./apps/admin/Dockerfile
+      args:
+        - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-pk_test_YXB0LXRldHJhLTIxLmNsZXJrLmFjY291bnRzLmRldiQ}
+        - NEXT_PUBLIC_PRODUCT_URL=${NEXT_PUBLIC_PRODUCT_URL:-http://localhost:8000}
+        - NEXT_PUBLIC_ORDER_URL=${NEXT_PUBLIC_ORDER_URL:-http://localhost:8001}
+        - NEXT_PUBLIC_PAYMENT_URL=${NEXT_PUBLIC_PAYMENT_URL:-http://localhost:8002}
+        - NEXT_PUBLIC_AUTH_URL=${NEXT_PUBLIC_AUTH_URL:-http://localhost:8003}
+        - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME:-dqzsggeyb}
+    container_name: admin-app
+    ports:
+      - "3003:3003"
+    env_file:
+      - ./apps/admin/.env
+    networks:
+      - ecom-network
+
+networks:
+  ecom-network:
+    driver: bridge

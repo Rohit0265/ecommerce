@@ -6,6 +6,7 @@
     "type": "module",
     "scripts": {
         "check-types": "tsc --noEmit",
+        "start": "tsx src/index.ts",
         "dev": "tsx --env-file=.env --watch src/index.ts"
     },
     "keywords": [],
