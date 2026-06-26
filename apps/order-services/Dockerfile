@@ -41,4 +41,4 @@ WORKDIR /app/apps/order-services
 EXPOSE 8001
 
 ENV NODE_ENV=production
-CMD ["pnpm", "start"]
+CMD ["npx", "tsx", "src/index.ts"]

@@ -41,4 +41,4 @@ WORKDIR /app/apps/auth-service
 EXPOSE 8003
 
 ENV NODE_ENV=production
-CMD ["pnpm", "start"]
+CMD ["npx", "tsx", "src/index.ts"]

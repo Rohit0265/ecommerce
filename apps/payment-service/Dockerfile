@@ -41,4 +41,4 @@ WORKDIR /app/apps/payment-service
 EXPOSE 8002
 
 ENV NODE_ENV=production
-CMD ["pnpm", "start"]
+CMD ["node", "dist/index.js"]

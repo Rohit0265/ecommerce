@@ -40,4 +40,4 @@ COPY --from=installer --chown=expressjs:nodejs /app .
 WORKDIR /app/apps/email-service
 
 ENV NODE_ENV=production
-CMD ["pnpm", "start"]
+CMD ["npx", "tsx", "src/index.ts"]

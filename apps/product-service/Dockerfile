@@ -42,4 +42,4 @@ WORKDIR /app/apps/product-service
 EXPOSE 8000
 
 ENV NODE_ENV=production
-CMD ["pnpm", "start"]
+CMD ["npx", "tsx", "src/index.ts"]
