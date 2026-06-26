@@ -35,6 +35,7 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 expressjs
 USER expressjs
 
+
 COPY --from=installer --chown=expressjs:nodejs /app .
 
 WORKDIR /app/apps/product-service
