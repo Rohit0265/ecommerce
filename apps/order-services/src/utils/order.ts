@@ -13,15 +13,18 @@ export const createOrder = async (order:OrderType)=>{
       }
       const newOrder = new Order(order);
       const savedOrder = await newOrder.save();
-      producer.send("order.created",{
+      console.log(`Order successfully saved in MongoDB: ${savedOrder._id}`);
+
+      await producer.send("order.created",{
          value:{
             email:savedOrder.email,
             amount:savedOrder.amount,
             status:savedOrder.status,
          }
       });
+      console.log(`Published order.created event to Kafka for email: ${savedOrder.email}`);
      }catch(error){
-        console.log(error);
+        console.log("Error in createOrder:", error);
         throw error;
      }
 }

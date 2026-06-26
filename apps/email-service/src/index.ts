@@ -26,14 +26,19 @@ const start = async () => {
       {
         topicName: "order.created",
         topicHandler: async (message) => {
+          console.log("Email service received order.created event:", message);
           const { email, amount, status } = message.value;
 
           if (email) {
+            console.log(`Sending email to ${email}...`);
             await sendMail({
               email,
               subject: "Order has been created",
               text: `Hello! Your order: Amount: ${amount/100}, Status: ${status}`,
             });
+            console.log(`Email successfully sent to ${email}!`);
+          } else {
+            console.log("No email field found in message payload!");
           }
         },
       },
