@@ -7,6 +7,7 @@ export const shouldBeUser = createMiddleware(async (c, next) => {
             message: "You are not logged in.",
         });
     }
+    c.set("userId", auth.userId);
     await next();
 });
 export const shouldBeAdmin = createMiddleware(async (c, next) => {
@@ -16,8 +17,9 @@ export const shouldBeAdmin = createMiddleware(async (c, next) => {
             message: "You are not logged in.",
         });
     }
+    c.set("userId", auth.userId);
     const claims = auth.sessionClaims;
-    if (claims.metadata?.role !== "admin") {
+    if (claims?.metadata?.role !== "admin") {
         return c.json({ success: false, message: "Unauthorized" });
     }
     await next();
