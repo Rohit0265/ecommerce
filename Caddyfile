@@ -4,24 +4,23 @@
 }
 
 :{$PORT} {
-    # Order Service (stripping the /orders prefix)
-    route /orders/* {
-        uri strip_prefix /orders
+    # Order Service (auto-strips the /orders prefix)
+    handle_path /orders/* {
         reverse_proxy localhost:8001
     }
 
-    # Payment Service (stripping the /payments prefix)
-    route /payments/* {
-        uri strip_prefix /payments
+    # Payment Service (auto-strips the /payments prefix)
+    handle_path /payments/* {
         reverse_proxy localhost:8002
     }
 
-    # Auth Service (stripping the /auth prefix)
-    route /auth/* {
-        uri strip_prefix /auth
+    # Auth Service (auto-strips the /auth prefix)
+    handle_path /auth/* {
         reverse_proxy localhost:8003
     }
 
     # Fallback: Forward all other requests to Product Service
-    reverse_proxy * localhost:8000
+    handle {
+        reverse_proxy localhost:8000
+    }
 }
