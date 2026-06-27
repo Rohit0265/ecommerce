@@ -20,6 +20,7 @@
     },
     "dependencies": {
         "@clerk/fastify": "^2.4.30",
+        "@fastify/cors": "^11.2.0",
         "@repo/kafka": "workspace:*",
         "@repo/order-db": "workspace:*",
         "date-fns": "^4.1.0",

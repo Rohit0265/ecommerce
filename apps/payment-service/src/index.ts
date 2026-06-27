@@ -14,9 +14,18 @@ const app = new Hono()
 
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map(o => o.trim())
-  : ["http://localhost:3002"];
+  : [];
 
-app.use("*", cors({ origin: allowedOrigins }))
+app.use("*", cors({
+  origin: (origin) => {
+    if (!origin) return "*";
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || origin.includes("localhost")) {
+      return origin;
+    }
+    return allowedOrigins[0] || "*";
+  },
+  credentials: true,
+}))
 app.use('*', clerkMiddleware())
 app.route("/sessions",sessionRoutes);
 app.route("/webhooks",webhookRoute);

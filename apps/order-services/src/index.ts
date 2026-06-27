@@ -1,6 +1,7 @@
 import Fasify from "fastify"
 // Trigger restart after Kafka is fully initialized
 
+import cors from '@fastify/cors'
 import { clerkPlugin, getAuth } from '@clerk/fastify'
 import { shoulbeUser } from "./middleware/authMiddleware.js";
 import { connectOrderDB } from "@repo/order-db"
@@ -9,6 +10,21 @@ import { consumer, producer } from "./utils/kafka.js";
 import { runKafkaSubscriptions } from "./utils/subscription.js";
 
 const fastify = Fasify();
+
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map(o => o.trim())
+  : [];
+
+fastify.register(cors, {
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.length === 0 || allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || origin.includes("localhost") || origin.includes("127.0.0.1")) {
+      return cb(null, true);
+    }
+    return cb(null, false);
+  },
+  credentials: true,
+})
 
 fastify.register(clerkPlugin)
 
