@@ -5,6 +5,8 @@ import CardList from "@/components/CardList";
 import TodoList from "@/components/TodoList";
 import { auth } from "@clerk/nextjs/server";
 
+export const dynamic = "force-dynamic";
+
 const Homepage = async () => {
   const { getToken } = await auth();
   const token = await getToken();

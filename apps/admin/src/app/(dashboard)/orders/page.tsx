@@ -3,6 +3,8 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import { OrderType } from "@repo/types";
 
+export const dynamic = "force-dynamic";
+
 const getData = async (): Promise<OrderType[]> => {
   try {
     const { getToken } = await auth();

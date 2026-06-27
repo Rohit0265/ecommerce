@@ -8,8 +8,12 @@ import { producer } from "./utils/kafka";
 
 const app = express();
 
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map(o => o.trim())
+  : ["http://localhost:3003"];
+
 app.use(cors({
-  origin: ["http://localhost:3003"],
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(express.json());

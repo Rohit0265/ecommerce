@@ -7,8 +7,12 @@ import categoryRouter from "./routes/category.routes.js";
 import { consumer, producer } from "./utils/kafka.js";
 const app = express();
 
+const allowedOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map(o => o.trim())
+  : ["http://localhost:3002", "http://localhost:3003"];
+
 app.use(cors({
-  origin: ["http://localhost:3002", "http://localhost:3003"],
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(express.json());

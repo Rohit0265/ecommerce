@@ -7,7 +7,10 @@ import webhookRoute from './route/webhook.stripe.js';
 import { consumer, producer } from './utils/kafka.js';
 import { runKafkaSubscriptions } from './utils/subscription.js';
 const app = new Hono();
-app.use("*", cors({ origin: ["http://localhost:3002"] }));
+const allowedOrigins = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(",").map(o => o.trim())
+    : ["http://localhost:3002"];
+app.use("*", cors({ origin: allowedOrigins }));
 app.use('*', clerkMiddleware());
 app.route("/sessions", sessionRoutes);
 app.route("/webhooks", webhookRoute);

@@ -64,7 +64,6 @@ const AddProduct = () => {
     resolver: zodResolver(ProductFormSchema),
     defaultValues: {
       name: "",
-      slug: "",
       shortDescription: "",
       description: "",
       price: 0,
@@ -146,22 +145,7 @@ const AddProduct = () => {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="slug"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Slug</FormLabel>
-                      <FormControl>
-                        <Input {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Enter the URL-friendly slug for the product.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
                 <FormField
                   control={form.control}
                   name="shortDescription"

@@ -2,6 +2,8 @@ import { auth, type User } from "@clerk/nextjs/server";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
+export const dynamic = "force-dynamic";
+
 const getData = async (): Promise<{ data: User[]; totalCount: number }> => {
   const { getToken } = await auth();
   const token = await getToken();
