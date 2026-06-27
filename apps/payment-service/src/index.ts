@@ -46,22 +46,28 @@ app.get('/', (c) => {
 // })
 
 
-const start = async () =>
-  {
-    try {
-      Promise.all([await producer.connect(), await consumer.connect()]);
-      await runKafkaSubscriptions(); 
-          serve({
-            fetch: app.fetch,
-            port: 8002
-          }, (info) => {
-            console.log(`Payment hai  bhai http://localhost:${info.port}`)
-          })
+const start = async () => {
+  try {
+    producer.connect().catch((error) => {
+      console.error("Failed to connect payment-service Kafka producer:", error);
+    });
 
-    } catch (error) {
-      console.log(error)
-      process.exit(1);
-    }
+    consumer.connect().then(async () => {
+      await runKafkaSubscriptions();
+    }).catch((error) => {
+      console.error("Failed to connect payment-service Kafka consumer:", error);
+    });
+
+    serve({
+      fetch: app.fetch,
+      port: 8002
+    }, (info) => {
+      console.log(`Payment hai  bhai http://localhost:${info.port}`)
+    });
+  } catch (error) {
+    console.log(error)
+    process.exit(1);
   }
+}
 
-  start()
+start()

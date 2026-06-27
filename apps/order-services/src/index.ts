@@ -12,26 +12,34 @@ const fastify = Fasify();
 
 fastify.register(clerkPlugin)
 
-fastify.get("/",(request,reply)=>{
-    return reply.send("Order Service Point Hai Ye")
+fastify.get("/", (request, reply) => {
+  return reply.send("Order Service Point Hai Ye")
 })
 
 
-fastify.get("/test", {preHandler:shoulbeUser},async (request, reply) => {
+fastify.get("/test", { preHandler: shoulbeUser }, async (request, reply) => {
   const { userId } = getAuth(request);
 
 
-  return reply.send({ success: true, message: "Order Service Is Authenticated !",userId:request.userId });
+  return reply.send({ success: true, message: "Order Service Is Authenticated !", userId: request.userId });
 });
 
 fastify.register(orderRoute);
 
 const start = async () => {
   try {
-    
-    Promise.all([await connectOrderDB(),await producer.connect(), await consumer.connect()
-    ]);
-    await runKafkaSubscriptions();
+    await connectOrderDB();
+
+    producer.connect().catch((error) => {
+      console.error("Failed to connect order-service Kafka producer:", error);
+    });
+
+    consumer.connect().then(async () => {
+      await runKafkaSubscriptions();
+    }).catch((error) => {
+      console.error("Failed to connect order-service Kafka consumer:", error);
+    });
+
     await fastify.listen({ port: 8001 })
 
     console.log("OOrder- Services on 8001")

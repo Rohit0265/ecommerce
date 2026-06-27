@@ -42,7 +42,12 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 const start = async () => {
   try {
-    Promise.all([await producer.connect(), await consumer.connect()]);
+    producer.connect().catch((error) => {
+      console.error("Failed to connect product-service Kafka producer:", error);
+    });
+    consumer.connect().catch((error) => {
+      console.error("Failed to connect product-service Kafka consumer:", error);
+    });
     app.listen(8000, () => {
       console.log("Product service is running on 8000");
     });

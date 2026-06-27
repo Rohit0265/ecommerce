@@ -35,7 +35,9 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 const start = async () => {
   try {
-    await producer.connect();
+    producer.connect().catch((error) => {
+      console.error("Failed to connect auth-service Kafka producer:", error);
+    });
     app.listen(8003, () => {
       console.log("Auth service is running on 8000");
     });
