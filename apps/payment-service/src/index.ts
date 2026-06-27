@@ -22,7 +22,7 @@ app.route("/sessions",sessionRoutes);
 app.route("/webhooks",webhookRoute);
 
 app.get('/', (c) => {
-  return c.text('Payment Endpoint Hai Ye okie')
+  return c.text('Payment Endpoint Hai Ye okie.')
 })
 
 
