@@ -11,6 +11,12 @@ import { runKafkaSubscriptions } from './utils/subscription.js'
 
 const app = new Hono()
 
+app.use("*", async (c, next) => {
+  console.log(`[PAYMENT] Request: ${c.req.method} ${c.req.url} - Path: ${c.req.path}`);
+  await next();
+  console.log(`[PAYMENT] Response status: ${c.res.status}`);
+});
+
 
 const allowedOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(",").map(o => o.trim())
